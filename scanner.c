@@ -57,7 +57,7 @@ bool isWordEnd(char c) {
  * towards the next token.
  */
 struct TokenList* splitTokens(char* input) {
-  char* str = malloc(TOKEN_LENGTH);
+  char* str = malloc(TOKEN_BUFFER_SIZE);
 
   for(; *input == ' '; ++input); //advance past whitespace
 
@@ -93,7 +93,6 @@ int main() {
   struct TokenList* tokens = splitTokens(input);
   printf("Attempting print.\n");
   printTokens(tokens);
-  printf("\n");
   printf("Attempting freeing.\n");
   freeTokens(tokens);
 
