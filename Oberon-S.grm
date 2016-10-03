@@ -1,0 +1,147 @@
+
+      			Oberon-S syntax in EBNF. 
+
+Oberon-S is based on the language Oberon as defined in the report 
+  The Programming Language Oberon
+  Revision 1.10.2013/3.5.2016
+  Niklaus Wirth
+It is a subset of Oberon with some extensions.
+
+
+NOTE: The meta characters are  -> [ ] ( ) { } | where
+      [ x ] denotes zero or one occurrences of x, i.e. an optional x
+      { x } denotes zero or more occurrences of x
+      x | y denotes one of either x or y
+      Quotes are only used where there is confusion between the meta characters
+        and characters in Oberon-S.
+
+
+Module -> MODULE Ident ; Block .
+
+Block ->  DeclSeq [BEGIN StatSeq] END Ident
+
+DeclSeq -> [ CONST  ConstDecls ]
+           [ TYPE  TypeDecls ]
+           [ VAR  VarDecls
+           { ProcDecl }
+
+ConstDecls -> ConstDecl { ConstDecl }
+
+ConstDecl -> Ident = ConstExpr ;
+
+TypeDecls -> TypeDecl { TypeDecl }
+
+TypeDecl -> Ident = Type ;
+
+VarDecls -> VarDecl { VarDecl }
+
+VarDecl -> IdentList : Type ;
+
+IdentList -> Ident { , Ident }
+
+ProcDecl -> PROCEDURE Ident [ FormalPars ] [ : Ident ] ; ProcBody
+
+FormalPars ->  '(' [ FPSection { ; FPSection } ] ')'
+
+FPSection -> [ VAR ] IdentList : FormalType
+
+FormalType -> Ident
+
+ProcBody -> Block
+
+Type -> Ident | ArrayType | RecordType | EnumType
+
+ArrayType -> ARRAY Length { , Length } OF Type
+
+Length -> ConstExpr
+
+RecordType -> RECORD FieldList { ; FieldList } END
+
+EnumType -> '(' Ident { , Ident } ')'
+
+FieldList -> [ IdentList : Type ]
+
+StatSeq -> Stat { ; Stat }
+
+Stat -> [ AssignStat | ProcCall | IfStat | WhileStat | CaseStat
+          | RepeatStat | ForStat | LoopStat | EXIT | RETURN [ Expr ] ]
+
+AssignStat -> Designator := Expr
+
+WhileStat -> WHILE Expr DO StatSeq END
+
+IfStat -> IF Expr THEN StatSeq
+          { ELSIF Expr THEN StatSeq }
+          [ ELSE StatSeq ]
+          END
+
+ProcCall -> Ident [ ActParams ]
+
+ActParams -> '(' [ ExprList ] ')'
+
+ExprList -> Expr { , Expr }
+
+RepeatStat -> REPEAT StatSeq UNTIL Expr
+
+ForStat -> FOR Ident := Expr TO Expr [ BY ConstExpr ] DO StatSeq END
+
+LoopStat -> LOOP StatSeq END
+
+CaseStat -> CASE Expr OF Case { '|' Case } [ ELSE StatSeq ] END
+
+Case -> [ CaseLabs { , CaseLabs } : StatSeq ]
+
+CaseLabs -> ConstExpr [ .. ConstExpr ]
+
+ConstExpr -> Expr
+
+Expr -> SimplExpr [ Relation SimplExpr ]
+
+SimplExpr -> [ + | - ] Term { AddOp Term }
+
+Term -> Factor { MulOp Factor }
+
+Factor -> Designator  [ ActParams ] | Integer | '(' Expr ')' | ~ Factor
+
+AddOp -> + | - | OR
+
+Relation -> = | # | < | <= | > | >= 
+
+MulOp -> * | DIV | MOD | &
+
+Designator -> Ident { Selector }
+
+Selector -> . Ident | '[' ExprList  ']'
+
+
+Ident -> Letter { Letter | Digit }
+
+Integer -> Digit { Digit } | Digit { HexDigit } H
+
+HexDigit -> Digit | A | B | C | D | E | F
+
+
+Comments may be inserted between any two tokens. They consist of
+arbitrary character sequences enclosed in (* and *) and may be nested.
+
+
+The following identifiers are prededined.
+
+ABS
+BOOLEAN
+FALSE
+INTEGER
+ODD
+READ
+READLN
+TRUE
+WRITE
+WRITELN
+
+ 
+A Compiler for Oberon-2 with some extensions is available on shell;
+the command is obc.
+Definitions of modules required for a complete program are located in the
+directory /usr/local/lib/obc.
+
+/ 04 Sep 16
