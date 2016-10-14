@@ -2,8 +2,16 @@
 #include <stdio.h>
 #include "const.h"
 
-const char*  singularTokens = " +-*/(){}[]<>:;\n\r\t";
-const char** reservedTokens;
+const char* ignoreChars          = " \n\r\t";
+const char* singularTokens       = "+-*/(){}[]<>:;";
+
+enum TokenTypes {
+  //TODO: consult oberon-s grammar and finish this.
+  module,
+  if_start,
+  if_end,
+  identifier
+};
 
 struct TokenList {
   char*              token;
@@ -12,33 +20,28 @@ struct TokenList {
 
 bool              isWordEnd(char);
 struct TokenList* createToken(char*);
-struct TokenList* splitTokens(char*);
-void              printTokens(const struct TokenList*);
 void              freeTokens(struct TokenList*);
+void              printTokens(const struct TokenList*);
+struct TokenList* splitTokens(char*);
 
-struct TokenList* createToken(char* str) {
-  struct TokenList* result = malloc(sizeof(char*) + sizeof(struct TokenList*));
-  result -> token = str;
-  result -> next = NULL;
-  return result;
-}
-
-void printTokens(const struct TokenList* tokens) {
-  printf(tokens -> token);
-  printf("\n");
-  if(tokens -> next) {
-    printTokens(tokens -> next);
+bool isIgnoreChar(char c){
+  int idx;
+  if(c == '\0') {
+    return false;
   }
-}
-
-void freeTokens(struct TokenList* tokens) {
-  free(tokens -> token);
-  if(tokens -> next) {
-    freeTokens(tokens -> next);
+  for(idx = 0; ignoreChars[idx] != '\0'; ++idx) {
+    if(c == ignoreChars[idx]) {
+      return true;
+    }
   }
-  free(tokens);
+  return false;
 }
 
+/*
+ * Returns true if the end of a token has been reached.
+ *
+ * TODO: implement for look-aheads
+ */
 bool isWordEnd(char c) {
   int idx;
   if(c == '\0') {
@@ -49,17 +52,44 @@ bool isWordEnd(char c) {
       return true;
     }
   }
-  return false;
+  return isIgnoreChar(c);
 }
 
-/*
- * Returns the current token based on the given input, advancing that input
- * towards the next token.
- */
+struct TokenList* createToken(char* str) {
+  struct TokenList* result = malloc(sizeof(char*) + sizeof(struct TokenList*));
+  result -> token = str;
+  result -> next = NULL;
+  return result;
+}
+
+void appendTokenList(struct TokenList* head, struct TokenList* tail) {
+  while(head -> next != NULL) {
+    head = head -> next;
+  }
+  head -> next = tail;
+}
+
+void freeTokens(struct TokenList* tokens) {
+  free(tokens -> token);
+  if(tokens -> next) {
+    freeTokens(tokens -> next);
+  }
+  free(tokens);
+}
+
+void printTokens(const struct TokenList* tokens) {
+  printf("- ");
+  printf(tokens -> token);
+  printf("\n");
+  if(tokens -> next) {
+    printTokens(tokens -> next);
+  }
+}
+
 struct TokenList* splitTokens(char* input) {
   char* str = malloc(TOKEN_BUFFER_SIZE);
 
-  for(; *input == ' '; ++input); //advance past whitespace
+  for(; isIgnoreChar(*input); ++input); //advance past whitespace
 
   if(*input == '\0') {
     return NULL;
@@ -77,25 +107,39 @@ struct TokenList* splitTokens(char* input) {
     str[idx] = '\0';
     input += idx;
   }
-  
   struct TokenList* result = createToken(str);
   result -> next = splitTokens(input);
   return result;
 }
 
-/**
- * Tester for the tokenizer.
- */
-int main() {
-  char* input = "test TEST teeest TEEEST fwoop";
+int main(int argc, char** argv) {
+  char* buf = malloc(LINE_BUFFER_SIZE);
 
-  printf("Attempting split.\n");
-  struct TokenList* tokens = splitTokens(input);
-  printf("Attempting print.\n");
+  if(argc != 2) {
+    printf("Usage: obcompile <program file>");
+    printf("\n");
+    return 1;
+  }
+
+  FILE* program = fopen(argv[1], "r");
+  if(!program) {
+    printf("Error opening specified file.");
+    printf("\n");
+    return 2;
+  }
+
+  struct TokenList* tokens = NULL;
+
+  fgets(buf, LINE_BUFFER_SIZE, program);
+  tokens = splitTokens(buf);
+  //free(buf);
+  while(fgets(buf, LINE_BUFFER_SIZE, program)) {
+    appendTokenList(tokens, splitTokens(buf));
+  }
   printTokens(tokens);
-  printf("Attempting freeing.\n");
   freeTokens(tokens);
 
+  free(buf);
   return 0;
 }
 
