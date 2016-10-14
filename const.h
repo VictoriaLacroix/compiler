@@ -9,4 +9,18 @@
 const int LINE_BUFFER_SIZE  = 256; // Max length of the line buffer
 const int TOKEN_BUFFER_SIZE = 16;  // Max length of a token
 
+enum TokenTypes {
+  //TODO: consult oberon-s grammar and finish this.
+  module,
+  if_start,
+  if_end,
+  identifier
+};
+
+struct TokenList {
+  char*              token;
+  struct TokenList*  next;
+};
+
+
 #endif

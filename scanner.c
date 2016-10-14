@@ -5,19 +5,6 @@
 const char* ignoreChars          = " \n\r\t";
 const char* singularTokens       = "+-*/(){}[]<>:;";
 
-enum TokenTypes {
-  //TODO: consult oberon-s grammar and finish this.
-  module,
-  if_start,
-  if_end,
-  identifier
-};
-
-struct TokenList {
-  char*              token;
-  struct TokenList*  next;
-};
-
 bool              isWordEnd(char);
 struct TokenList* createToken(char*);
 void              freeTokens(struct TokenList*);
