@@ -11,14 +11,16 @@ const int TOKEN_BUFFER_SIZE = 16;  // Max length of a token
 
 enum TokenTypes {
   //TODO: consult oberon-s grammar and finish this.
-  module,
-  if_start,
-  if_end,
-  identifier
+  UNKNOWN,
+  MODULE,
+  IF_START,
+  IF_END,
+  IDENTIFIER
 };
 
 struct TokenList {
   char*              token;
+  enum TokenTypes    type;
   struct TokenList*  next;
 };
 

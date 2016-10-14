@@ -45,6 +45,7 @@ bool isWordEnd(char c) {
 struct TokenList* createToken(char* str) {
   struct TokenList* result = malloc(sizeof(char*) + sizeof(struct TokenList*));
   result -> token = str;
+  result -> type = UNKNOWN; //will be found later
   result -> next = NULL;
   return result;
 }
