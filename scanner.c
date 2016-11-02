@@ -76,7 +76,7 @@ bool isWordEnd(char c) {
 struct TokenList* createToken(char* str) {
   struct TokenList* result = malloc(sizeof(char*) + sizeof(struct TokenList*));
   result -> token = str;
-  result -> type = UNKNOWN; //will be found later
+  result -> type = UNKNOWN_SYM; //will be found later
   result -> next = NULL;
   return result;
 }
@@ -152,7 +152,7 @@ TokenType verifyToken(const char* token) {
   if(isDigit(*token)) {
     return scanDigit(token);
   }
-  return UNKNOWN;
+  return UNKNOWN_SYM;
 }
 
 TokenType scanIdent(const char* token) {
@@ -163,7 +163,7 @@ TokenType scanIdent(const char* token) {
     if(isLetter(*(token+idx)) || isDigit(*(token+idx))) {
       ++idx;
     } else {
-      return UNKNOWN;
+      return UNKNOWN_SYM;
     }
   }
   return IDENT_SYM;
@@ -180,7 +180,7 @@ TokenType scanDigit(const char* token) {
       }
       ++idx;
     } else {
-      return UNKNOWN;
+      return UNKNOWN_SYM;
     }
   }
   if(hex) {
