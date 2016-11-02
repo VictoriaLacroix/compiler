@@ -16,12 +16,12 @@
 
 // For tokenizing
 const char* ignoreChars          = " \n\r\t";
-const char* singularTokens       = "+-*=()<>[]:;|&";
+const char* singularTokens       = "+-*=()<>[].,:;#|&";
 const char* partialTokens        = "(*<>"; // for (*, *), <= and >=
 
 const int LINE_BUFFER_SIZE   = 256; // Max length of the line buffer
 const int TOKEN_BUFFER_SIZE  = 16;  // Max length of a token
-const int NUM_RESERVED_WORDS = 55;  // Number of reserved words in the language
+const int NUM_RESERVED_WORDS = 59;  // Number of reserved words in the language
 
 //TokenTypes
 typedef enum
@@ -78,6 +78,10 @@ typedef enum
 , lbrakt      // [
 , rbrakt      // ]
 , pipe        // |
+, dot         // .
+, comma       // ,
+, colon       // :
+, semicolon   // ;
 , cmtstr      // (*
 , cmtend      // *)
 , IDENT_SYM
@@ -141,6 +145,10 @@ const char* symNames[] =
 , "["          // [
 , "]"          // ]
 , "|"          // |
+, "."          // .
+, ","          // ,
+, ":"          // :
+, ";"          // ;
 , "(*"         // (*
 , "*)"         // *)
 , "IDENT_SYM"
@@ -204,6 +212,10 @@ const TokenType reservedWordsSymbols[] =
 , lbrakt      // [
 , rbrakt      // ]
 , pipe        // |
+, dot         // .
+, comma       // ,
+, colon       // :
+, semicolon   // ;
 , cmtstr      // (*
 , cmtend      // *)
 };
@@ -263,6 +275,10 @@ const char* reservedWords[] =
 , "["
 , "]"
 , "|"
+, "."
+, ","
+, ":"
+, ";"
 , "(*"
 , "*)"
 };
