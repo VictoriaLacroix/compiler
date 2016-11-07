@@ -15,22 +15,26 @@
 #define byte  unsigned char
 
 // For tokenizing
-//
 const char* ignoreChars          = " \n\r\t";
 
-// list of chars that require input to be looked ahead
-const char* partialTokens        = "(*<>"; // for (*, *), <= and >=
-
-//list of chars that automatically break a token
+//list of chars that automatically break a token (verified after above
+//doubleTokens chars.)
 const char* singularTokens       = "+-*=()<>[].,:;#|&";
 
+// list of non alpha-numeric tokens that are two chars long
+const char* doubleTokens        = "(**)<=>=:=";
+
+//Const numbers used for tokenizing/scanning
 const int LINE_BUFFER_SIZE   = 256; // Max length of the line buffer
 const int TOKEN_BUFFER_SIZE  = 16;  // Max length of a token
-const int NUM_RESERVED_WORDS = 59;  // Number of reserved words in the language
+const int NUM_RESERVED_WORDS = 61;  // Number of reserved words in the language
 
-// TokenTypes enum allowing recognized tokens to be expressed as a data type
+// TokenType enum allowing recognized tokens to be expressed as a data type
+// Constant lists use haskell-style syntax as they are very easy to expand and
+// edit in bulk using vi commands
 typedef enum
 { MODULE_SYM
+, IMPORT_SYM
 , BEGIN_SYM
 , END_SYM
 , CONST_SYM
@@ -73,6 +77,7 @@ typedef enum
 , PLUS_SYM        // +
 , MINUS_SYM       // -
 , EQUAL_SYM       // =
+, ASSIGN_SYM      // :=
 , OCTOTHORPE_SYM  // #
 , LT_SYM          // <
 , GT_SYM          // >
@@ -98,6 +103,7 @@ typedef enum
 //This array is used for outputting symbol types
 const char* symNames[] =
 { "MODULE_SYM"
+, "IMPORT_SYM"
 , "BEGIN_SYM"
 , "END_SYM"
 , "CONST_SYM"
@@ -140,6 +146,7 @@ const char* symNames[] =
 , "PLUS_SYM"          // +
 , "MINUS_SYM"         // -
 , "EQUALS_SYM"        // =
+, "ASSIGN_SYM"        // :=
 , "OCTOTHORPE_SYM"    // #
 , "LT_SYM"            // <
 , "GT_SYM"            // >
@@ -165,6 +172,7 @@ const char* symNames[] =
 // Array of syms representing reversed words and operations
 const TokenType reservedWordsSymbols[] =
 { MODULE_SYM
+, IMPORT_SYM
 , BEGIN_SYM
 , END_SYM
 , CONST_SYM
@@ -207,6 +215,7 @@ const TokenType reservedWordsSymbols[] =
 , PLUS_SYM        // +
 , MINUS_SYM       // -
 , EQUAL_SYM       // =
+, ASSIGN_SYM      // :=
 , OCTOTHORPE_SYM  // #
 , LT_SYM          // <
 , GT_SYM          // >
@@ -228,6 +237,7 @@ const TokenType reservedWordsSymbols[] =
 // Reserved word strings to compare against.
 const char* reservedWords[] =
 { "MODULE"
+, "IMPORT"
 , "BEGIN"
 , "END"
 , "CONST"
@@ -270,6 +280,7 @@ const char* reservedWords[] =
 , "+"
 , "-"
 , "="
+, ":="
 , "#"
 , "<"
 , ">"
@@ -292,6 +303,9 @@ const char* reservedWords[] =
 struct TokenList {
   char*              token;
   TokenType          type;
+  //TODO implement line numbers for error handling
+  //int                linenumber;
+  struct TokenList*  prev;
   struct TokenList*  next;
 };
 
