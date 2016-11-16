@@ -9,10 +9,9 @@
  */
 
 // Defines for boolean types. C doesn't have these!
-#define bool  char
+typedef char  bool
 #define true  1
 #define false 0
-#define byte  unsigned char
 
 // For tokenizing
 const char* ignoreChars          = " \n\r\t";
@@ -27,6 +26,7 @@ const char* doubleTokens        = "(**)<=>=:=";
 //Const numbers used for tokenizing/scanning
 const int LINE_BUFFER_SIZE   = 256; // Max length of the line buffer
 const int TOKEN_BUFFER_SIZE  = 16;  // Max length of a token
+const int RULE_BUFFER_SIZE   = 16;  // Max amount of toxens in a rule
 const int NUM_RESERVED_WORDS = 61;  // Number of reserved words in the language
 
 // TokenType enum allowing recognized tokens to be expressed as a data type
