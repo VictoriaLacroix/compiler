@@ -42,6 +42,24 @@ void writeSym() {
   }
 }
 
+void module() {
+  accept(MODULE_SYM, 0);
+  accept(IDENT_SYM, 0);
+  accept(SEMICOLON_SYM, 0);
+  block();
+  accept(DOT_SYM, 0);
+}
+
+void block() {
+  declSeq();
+  if(token -> type == BEGIN_SYM) {
+    accept(BEGIN_SYM, 0);
+    statSeq();
+  }
+  accept(END_SYM, 0);
+  accept(IDENT_SYM, 0);
+}
+
 void error(TokenType found, TokenType expected) {
   printf("Error # %d: ", expected);
   printf(symNames[found]);
