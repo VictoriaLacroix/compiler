@@ -3,11 +3,13 @@
 // Global tokenList for parsing. Not ideal, but good enough.
 struct TokenList* token;
 
-void init(struct TokenList* input) {
-  if() {
+bool init(struct TokenList* input) {
+  if(input) {
     token = input;
+    return true;
   } else {
     printf("Parse Error: Tokens list is null.");
+    return false;
   }
 }
 
@@ -17,11 +19,34 @@ bool accept(TokenType expected, int errno) {
     nextSym();
     return true;
   } else {
-    error();
+    error(token -> type, expected);
     return false
   }
 }
 
-void error(TokenType expected, int errno) {
-  printf("");
+void nextSym() {
+  token = token -> next;
+}
+
+void writeSym() {
+  printf(symNames[token -> type]);
+  switch(token -> type) {
+    case IDENT_SYM:
+    case NUMBER_SYM:
+    case HEX_SYM:
+      printf(" : ");
+      printf(token -> token);
+    default:
+      printf("\n");
+      break;
+  }
+}
+
+void error(TokenType found, TokenType expected) {
+  printf("Error # %d: ", expected);
+  printf(symNames[found]);
+  printf(" found but ");
+  printf(symNames[expected]);
+  printf(" was expected.");
+  printf("\n");
 }
