@@ -233,8 +233,6 @@ void term(){
 }
 
 void factor(){
-//Grammar file is ambiguous here. Not sure if  (Designator [ActParams]) | *othershit
-//                                         or  Designator ([ActParams]) | *othershit*
  designator();
  switch(token -> type){
   case IDENT_SYM :
@@ -249,7 +247,7 @@ void factor(){
   case TILDE_SYM
    accept(TILDE_SYM, 0);
   default:
-   //I AM ERROR
+   error(token -> type, IDENT_SYM);
 }
 
 void addOp(){
@@ -264,7 +262,7 @@ void addOp(){
     accept(PLUS_SYM, 0);
     break;
   default :
-    //I AM ERROR
+    error(token -> type, IDENT_SYM);
  } 
 }
 
@@ -289,7 +287,7 @@ void relation(){
     accept(RTE_SYM, 0);
     break;
   default :
-    //I AM ERROR
+    error(token -> type, IDENT_SYM);
  }
 }
 
@@ -303,7 +301,7 @@ void mulOp(){ //GOD DAMN I SHOULD HAVE MADE THIS A SWITCH
   else if(token -> type == AMPERSAND_SYM)
     accept(AMPERSAND_SYM);
   else
-    //I AM ERROR
+    error(token -> type, IDENT_SYM);
 }
 
 void designator(){
@@ -321,7 +319,7 @@ void selector(){
     exprList();
     accept(RBRAKT_SYM, 0);
   } else
-   //I AM ERROR   
+   error(token -> type, IDENT_SYM);   
 }
 
 
