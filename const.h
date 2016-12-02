@@ -18,7 +18,7 @@ const char* ignoreChars          = " \n\r\t";
 
 //list of chars that automatically break a token (verified after above
 //doubleTokens chars.)
-const char* singularTokens       = "+-*=()<>[].,:;#|&";
+const char* singularTokens       = "+-*=()<>[].,:;#|&~";
 
 // list of non alpha-numeric tokens that are two chars long
 const char* doubleTokens        = "(**)<=>=:=";
@@ -27,7 +27,7 @@ const char* doubleTokens        = "(**)<=>=:=";
 const int LINE_BUFFER_SIZE   = 256; // Max length of the line buffer
 const int TOKEN_BUFFER_SIZE  = 16;  // Max length of a token
 const int RULE_BUFFER_SIZE   = 16;  // Max amount of toxens in a rule
-const int NUM_RESERVED_WORDS = 61;  // Number of reserved words in the language
+const int NUM_RESERVED_WORDS = 62;  // Number of reserved words in the language
 
 // TokenType enum allowing recognized tokens to be expressed as a data type
 // Constant lists use haskell-style syntax as they are very easy to expand and
@@ -92,6 +92,7 @@ typedef enum
 , COMMA_SYM       // ,
 , COLON_SYM       // :
 , SEMICOLON_SYM   // ;
+, TILDE_SYM       // ~
 , CMT_STR_SYM     // (*
 , CMT_END_SYM     // *)
 , IDENT_SYM
@@ -161,6 +162,7 @@ const char* symNames[] =
 , "COMMA_SYM"         // ,
 , "COLON_SYM"         // :
 , "SEMICOLON_SYM"     // ;
+, "TILDE_SYM"         // ~
 , "CMT_STR_SYM"       // (*
 , "CMT_END_SYM"       // *)
 , "IDENT_SYM"
@@ -230,6 +232,7 @@ const TokenType reservedWordsSymbols[] =
 , COMMA_SYM       // ,
 , COLON_SYM       // :
 , SEMICOLON_SYM   // ;
+, TILDE_SYM       // ~
 , CMT_STR_SYM     // (*
 , CMT_END_SYM     // *)
 };
@@ -295,6 +298,7 @@ const char* reservedWords[] =
 , ","
 , ":"
 , ";"
+, "~"
 , "(*"
 , "*)"
 };
