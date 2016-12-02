@@ -1,6 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include "const.h"
+#include "scanner.h"
 
 /*
  * scanner.c
@@ -8,31 +6,6 @@
  * by  Victoria Lacroix
  * and Alex Arbour
  */
-
-// Pre-defining all functions
-// tokenizing functions
-bool              isIgnoreChar(const char);
-bool              isDoubleToken(const char, const char);
-bool              isWordEnd(const char);
-struct TokenList* createToken(char*);
-struct TokenList* splitTokens(const char*);
-
-// recognizing functions
-TokenType         verifyToken(const char*);
-TokenType         scanIdent(const char*);
-TokenType         scanDigit(const char*);
-bool              isLetter(const char c);
-bool              isDigit(const char c);
-bool              isHex(const char c);
-int               strcmp(const char*, const char*);
-void              recognize(struct TokenList*);
-
-// TokenList manipulation
-void              appentTokenList(struct TokenList*, struct TokenList*);
-bool              removeComments(struct TokenList*);
-struct TokenList* findCommentEnd(struct TokenList*);
-void              printTokens(const struct TokenList*);
-void              freeTokens(struct TokenList*);
 
 // ----- TOKENIZING CODE ------
 
@@ -274,51 +247,4 @@ void recognize(struct TokenList* tokens) {
     tokens = tokens -> next;
   } while(tokens != NULL);
 }
-
-// ----- MAIN FUNCTION -----
-
-#ifndef __MAIN_FUNCTION_DEFINED__
-#define __MAIN_FUNCTION_DEFINED__
-
-int main(int argc, char** argv) {
-  char* buf = malloc(LINE_BUFFER_SIZE);
-
-  if(argc != 2) {
-    printf("Usage: a.out <file>");
-    printf("\n");
-    return 1;
-  }
-
-  FILE* program = fopen(argv[1], "r");
-  if(!program) {
-    printf("Error opening specified file.");
-    printf("\n");
-    return 2;
-  }
-
-  struct TokenList* tokens = NULL;
-
-  fgets(buf, LINE_BUFFER_SIZE, program);
-  tokens = splitTokens(buf);
-  //free(buf);
-  while(fgets(buf, LINE_BUFFER_SIZE, program)) {
-    appendTokenList(tokens, splitTokens(buf));
-  }
-  setPrevs(tokens);
-
-  recognize(tokens);
-
-  if(!removeComments(tokens)) {
-    printf("Unclosed comment found.\n");
-    return 3;
-  }
-
-  printTokens(tokens);
-  freeTokens(tokens);
-
-  free(buf);
-  return 0;
-}
-
-#endif
 

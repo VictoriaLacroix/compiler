@@ -97,7 +97,7 @@ typedef enum
 , IDENT_SYM
 , NUMBER_SYM
 , HEX_SYM
-, UNKNOWN_SYM     // placeholder
+, UNKNOWN_SYM     // placeholder/error
 } TokenType;
 
 //This array is used for outputting symbol types
@@ -297,6 +297,14 @@ const char* reservedWords[] =
 , ";"
 , "(*"
 , "*)"
+};
+
+typedef enum
+{ ERR_UNKNOWN
+} ErrTypes;
+
+const char* errmsgs[] =
+{ "Unknown error occurred."
 };
 
 
