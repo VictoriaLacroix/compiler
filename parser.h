@@ -1,15 +1,20 @@
-#ifndef __PARSER_H_INCLUDED__
-#define __PARSER_H_INCLUDED__
+#ifndef PARSER_H_
+#define PARSER_H_
 
 #include <stdlib.h>
 #include <stdio.h>
 #include "const.h"
 
-void init(struct TokenList*);
+extern struct TokenList* sym;
+extern int    indent;
+
+void parse(struct TokenList*);
+bool init(struct TokenList*);
 bool accept(TokenType, int);
 void nextSym();
 void writeSym();
-void error(TokenType, int);
+void writeRule(const char*);
+void error(TokenType, TokenType);
 
 void module();
 void block();
@@ -34,6 +39,7 @@ void enumType();
 void fieldList();
 void statSeq();
 void stat();
+void assignOrProc();
 void assignStat();
 void whileStat();
 void ifStat();
@@ -61,7 +67,5 @@ bool isAddOp(TokenType);
 bool isRelation(TokenType);
 bool isMulOp(TokenType);
 bool isNumber(TokenType);
-
-void parse();
 
 #endif

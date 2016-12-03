@@ -131,21 +131,31 @@ bool removeComments(struct TokenList* tokens) {
   do {
     if(tokens -> type == CMT_STR_SYM) {
       struct TokenList* end = findCommentEnd(tokens);
-      if(end == NULL) {
-        return false;
-      } else {
+      if(end) {
         // unlink everything between the comment syms
-        tokens -> prev -> next = end -> next;
-        end -> next -> prev = tokens -> prev;
-        tokens -> prev == NULL;
-        end -> next == NULL;
+        struct TokenList* comment = tokens;
+        if(tokens -> prev) {
+          tokens -> prev -> next = end -> next;
+        }
+        tokens = end -> next;
+        if(end -> next) {
+          end -> next -> prev = comment -> prev;
+        }
+        comment -> prev = NULL;
+        end -> next = NULL;
         //free them to prevent memory leaks
         //TODO fix this
-        //freeTokens(tokens);
+        printf("Removing these comments:\n");
+        printTokens(comment);
+        freeTokens(comment);
+      } else {
+        return false;
       }
+    } else {
+      tokens = tokens -> next;
     }
-    tokens = tokens -> next;
   } while(tokens);
+  printf("Finished removing comments.\n");
   return true;
 }
 

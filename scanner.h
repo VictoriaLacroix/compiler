@@ -1,5 +1,5 @@
-#ifndef __SCANNER_H_INCLUDED__
-#define __SCANNER_H_INCLUDED__
+#ifndef SCANNER_H_
+#define SCANNER_H_
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,6 +12,7 @@ bool              isDoubleToken(const char, const char);
 bool              isWordEnd(const char);
 struct TokenList* createToken(char*);
 struct TokenList* splitTokens(const char*);
+void              setPrevs(struct TokenList* tokens);
 
 // recognizing functions
 TokenType         verifyToken(const char*);
@@ -24,7 +25,7 @@ int               strcmp(const char*, const char*);
 void              recognize(struct TokenList*);
 
 // TokenList manipulation
-void              appentTokenList(struct TokenList*, struct TokenList*);
+void              appendTokenList(struct TokenList*, struct TokenList*);
 bool              removeComments(struct TokenList*);
 struct TokenList* findCommentEnd(struct TokenList*);
 void              printTokens(const struct TokenList*);
