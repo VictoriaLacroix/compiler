@@ -10,7 +10,7 @@ extern int    indent;
 
 void parse(struct TokenList*);
 bool init(struct TokenList*);
-bool accept(TokenType, int);
+bool accept(TokenType);
 void nextSym();
 void writeSym();
 void writeRule(const char*);

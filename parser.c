@@ -18,9 +18,8 @@ bool init(struct TokenList* tokens) {
   }
 }
 
-bool accept(TokenType expected, int errno) {
+bool accept(TokenType expected) {
   if(sym -> type == expected) {
-    //printf("Successfully accepted: ");
     writeSym();
     nextSym();
     return true;
@@ -36,7 +35,11 @@ void nextSym() {
 
 void writeIndent() {
   for(int i = 0; i < indent; ++i) {
-    printf("  ");
+    if(i < indent - 1) {
+      printf("| ");
+    } else {
+      printf("+ ");
+    }
   }
 }
 
@@ -52,7 +55,7 @@ void writeSym() {
     default:
       break;
   }
-  printf("\n");
+  printf(" (accepted)\n");
 }
 
 void writeRule(const char* rule) {
@@ -75,11 +78,11 @@ void error(TokenType found, TokenType expected) {
 void module() {
   writeRule("Module");
   ++indent;
-  accept(MODULE_SYM, 0);
-  accept(IDENT_SYM, 0);
-  accept(SEMICOLON_SYM, 0);
+  accept(MODULE_SYM);
+  accept(IDENT_SYM);
+  accept(SEMICOLON_SYM);
   block();
-  accept(DOT_SYM, 0);
+  accept(DOT_SYM);
   --indent;
 }
 
@@ -88,12 +91,12 @@ void block() {
   ++indent;
   declSeq();
   if(sym -> type == BEGIN_SYM) {
-    accept(BEGIN_SYM, 0);
+    accept(BEGIN_SYM);
     statSeq();
   }
-  accept(END_SYM, 0);
-  accept(IDENT_SYM, 0);
-  accept(SEMICOLON_SYM, 0);
+  accept(END_SYM);
+  accept(IDENT_SYM);
+  accept(SEMICOLON_SYM);
   --indent;
 }
 
@@ -101,15 +104,15 @@ void declSeq() {
   writeRule("DeclSeq");
   ++indent;
   if(sym -> type == CONST_SYM) {
-    accept(CONST_SYM, 0);
+    accept(CONST_SYM);
     constDecls();
   }
   if(sym -> type == TYPE_SYM) {
-    accept(TYPE_SYM, 0);
+    accept(TYPE_SYM);
     typeDecls();
   }
   if(sym -> type == VAR_SYM) {
-    accept(VAR_SYM, 0);
+    accept(VAR_SYM);
     varDecls();
   }
   while(sym -> type == PROCEDURE_SYM) {
@@ -130,10 +133,10 @@ void constDecls() {
 void constDecl() {
   writeRule("ConstDecl");
   ++indent;
-  accept(IDENT_SYM, 0);
-  accept(EQUALS_SYM, 0);
+  accept(IDENT_SYM);
+  accept(EQUALS_SYM);
   constExpr();
-  accept(SEMICOLON_SYM, 0);
+  accept(SEMICOLON_SYM);
   --indent;
 }
 
@@ -150,10 +153,10 @@ void typeDecls() {
 void typeDecl() {
   writeRule("TypeDecl");
   ++indent;
-  accept(IDENT_SYM, 0);
-  accept(EQUALS_SYM, 0);
+  accept(IDENT_SYM);
+  accept(EQUALS_SYM);
   type();
-  accept(SEMICOLON_SYM, 0);
+  accept(SEMICOLON_SYM);
   --indent;
 }
 
@@ -171,19 +174,19 @@ void varDecl() {
   writeRule("VarDecl");
   ++indent;
   identList();
-  accept(COLON_SYM, 0);
+  accept(COLON_SYM);
   type();
-  accept(SEMICOLON_SYM, 0);
+  accept(SEMICOLON_SYM);
   --indent;
 }
 
 void identList() {
   writeRule("IdentList");
   ++indent;
-  accept(IDENT_SYM, 0);
+  accept(IDENT_SYM);
   while(sym -> type == COMMA_SYM) {
-    accept(COMMA_SYM, 0);
-    accept(IDENT_SYM, 0);
+    accept(COMMA_SYM);
+    accept(IDENT_SYM);
   }
   --indent;
 }
@@ -191,16 +194,16 @@ void identList() {
 void procDecl() {
   writeRule("ProcDecl");
   ++indent;
-  accept(PROCEDURE_SYM, 0);
-  accept(IDENT_SYM, 0);
+  accept(PROCEDURE_SYM);
+  accept(IDENT_SYM);
   if(sym -> type == LPAREN_SYM) {
     formalPars();
   }
   if(sym -> type == COLON_SYM) {
-    accept(COLON_SYM, 0);
-    accept(IDENT_SYM, 0);
+    accept(COLON_SYM);
+    accept(IDENT_SYM);
   }
-  accept(SEMICOLON_SYM, 0);
+  accept(SEMICOLON_SYM);
   procBody();
   --indent;
 }
@@ -208,15 +211,15 @@ void procDecl() {
 void formalPars() {
   writeRule("FormalPars");
   ++indent;
-  accept(LPAREN_SYM, 0);
+  accept(LPAREN_SYM);
   if(sym -> type == VAR_SYM || sym -> type == IDENT_SYM) {
     fpSection();
     while(sym -> type == SEMICOLON_SYM) {
-      accept(SEMICOLON_SYM, 0);
+      accept(SEMICOLON_SYM);
       fpSection();
     }
   }
-  accept(RPAREN_SYM, 0);
+  accept(RPAREN_SYM);
   --indent;
 }
 
@@ -224,10 +227,10 @@ void fpSection() {
   writeRule("FPSection");
   ++indent;
   if(sym -> type == VAR_SYM) {
-    accept(VAR_SYM, 0);
+    accept(VAR_SYM);
   }
   identList();
-  accept(COLON_SYM, 0);
+  accept(COLON_SYM);
   formalType();
   --indent;
 }
@@ -235,7 +238,7 @@ void fpSection() {
 void formalType() {
   writeRule("FormalType");
   ++indent;
-  accept(IDENT_SYM, 0);
+  accept(IDENT_SYM);
   --indent;
 }
 
@@ -251,7 +254,7 @@ void type() {
   ++indent;
   switch(sym -> type) {
     case IDENT_SYM:
-      accept(IDENT_SYM, 0);
+      accept(IDENT_SYM);
       break;
     case ARRAY_SYM:
       arrayType();
@@ -271,12 +274,12 @@ void type() {
 void arrayType() {
   writeRule("ArrayType");
   ++indent;
-  accept(ARRAY_SYM, 0);
+  accept(ARRAY_SYM);
   length();
   while(sym -> type == COMMA_SYM) {
     length();
   }
-  accept(OF_SYM, 0);
+  accept(OF_SYM);
   type();
   --indent;
 }
@@ -291,10 +294,10 @@ void length() {
 void recordType() {
   writeRule("RecordType");
   ++indent;
-  accept(RECORD_SYM, 0);
+  accept(RECORD_SYM);
   fieldList();
   while(sym -> type == SEMICOLON_SYM) {
-    accept(SEMICOLON_SYM, 0);
+    accept(SEMICOLON_SYM);
     fieldList();
   }
   --indent;
@@ -303,13 +306,13 @@ void recordType() {
 void enumType() {
   writeRule("EnumType");
   ++indent;
-  accept(LPAREN_SYM, 0);
-  accept(IDENT_SYM, 0);
+  accept(LPAREN_SYM);
+  accept(IDENT_SYM);
   while(sym -> type == COMMA_SYM) {
-    accept(COMMA_SYM, 0);
-    accept(IDENT_SYM, 0);
+    accept(COMMA_SYM);
+    accept(IDENT_SYM);
   }
-  accept(RPAREN_SYM, 0);
+  accept(RPAREN_SYM);
   --indent;
 }
 
@@ -318,7 +321,7 @@ void fieldList() {
   ++indent;
   if(sym -> type == IDENT_SYM) {
     identList();
-    accept(COLON_SYM, 0);
+    accept(COLON_SYM);
     type();
   }
   --indent;
@@ -329,7 +332,7 @@ void statSeq() {
   ++indent;
   stat();
   while(sym -> type == SEMICOLON_SYM) {
-    accept(SEMICOLON_SYM, 0);
+    accept(SEMICOLON_SYM);
     stat();
   }
   --indent;
@@ -361,10 +364,10 @@ void stat() {
       loopStat();
       break;
     case EXIT_SYM:
-      accept(EXIT_SYM, 0);
+      accept(EXIT_SYM);
       break;
     case RETURN_SYM:
-      accept(RETURN_SYM, 0);
+      accept(RETURN_SYM);
       expr();
       break;
     default:
@@ -388,7 +391,7 @@ void assignOrProc() {
 void assignStat() {
   writeRule("AssignStat");
   ++indent;
-  accept(ASSIGN_SYM, 0);
+  accept(ASSIGN_SYM);
   expr();
   --indent;
 }
@@ -405,54 +408,54 @@ void procCall() {
 void whileStat() {
   writeRule("WhileStat");
   ++indent;
-  accept(WHILE_SYM, 0);
+  accept(WHILE_SYM);
   expr();
-  accept(DO_SYM, 0);
+  accept(DO_SYM);
   statSeq();
   while(sym -> type == ELSIF_SYM) {
-    accept(ELSIF_SYM, 0);
+    accept(ELSIF_SYM);
     expr();
-    accept(DO_SYM, 0);
+    accept(DO_SYM);
     statSeq();
   }
   if(sym -> type == ELSE_SYM){
-    accept(ELSE_SYM, 0);
+    accept(ELSE_SYM);
     statSeq();
   }
-  accept(END_SYM, 0);
+  accept(END_SYM);
   --indent;
 }
 
 void ifStat() {
   writeRule("IfStat");
   ++indent;
-  accept(IF_SYM, 0);
+  accept(IF_SYM);
   expr();
-  accept(THEN_SYM, 0);
+  accept(THEN_SYM);
   statSeq();
   while(sym -> type == ELSIF_SYM) {
-    accept(ELSIF_SYM, 0);
+    accept(ELSIF_SYM);
     expr();
-    accept(THEN_SYM, 0);
+    accept(THEN_SYM);
     statSeq();
   }
   if(sym -> type == ELSE_SYM){
-    accept(ELSE_SYM, 0);
+    accept(ELSE_SYM);
     statSeq();
   }
-  accept(END_SYM, 0);
+  accept(END_SYM);
   --indent;
 }
 
 void actParams() {
   writeRule("ActParams");
   ++indent;
-  accept(LPAREN_SYM, 0);
+  accept(LPAREN_SYM);
   if(sym -> type == PLUS_SYM || sym -> type == MINUS_SYM
       || sym -> type == IDENT_SYM) {
     exprList();
   }
-  accept(RPAREN_SYM, 0);
+  accept(RPAREN_SYM);
   --indent;
 }
 
@@ -461,7 +464,7 @@ void exprList() {
   ++indent;
   expr();
   while(sym -> type == COMMA_SYM) {
-    accept(COMMA_SYM, 0);
+    accept(COMMA_SYM);
     expr();
   }
   --indent;
@@ -470,9 +473,9 @@ void exprList() {
 void repeatStat() {
   writeRule("RepeatStat");
   ++indent;
-  accept(REPEAT_SYM, 0);
+  accept(REPEAT_SYM);
   statSeq();
-  accept(UNTIL_SYM, 0);
+  accept(UNTIL_SYM);
   expr();
   --indent;
 }
@@ -480,47 +483,47 @@ void repeatStat() {
 void forStat() {
   writeRule("ForStat");
   ++indent;
-  accept(FOR_SYM, 0);
-  accept(IDENT_SYM, 0);
-  accept(ASSIGN_SYM, 0);
+  accept(FOR_SYM);
+  accept(IDENT_SYM);
+  accept(ASSIGN_SYM);
   expr();
-  accept(TO_SYM, 0);
+  accept(TO_SYM);
   expr();
   if(sym -> type == BY_SYM) {
-    accept(BY_SYM, 0);
+    accept(BY_SYM);
     constExpr();
   }
-  accept(DO_SYM, 0);
+  accept(DO_SYM);
   statSeq();
-  accept(END_SYM, 0);
+  accept(END_SYM);
   --indent;
 }
 
 void loopStat() {
   writeRule("LoopStat");
   ++indent;
-  accept(LOOP_SYM, 0);
+  accept(LOOP_SYM);
   statSeq();
-  accept(END_SYM, 0);
+  accept(END_SYM);
   --indent;
 }
 
 void caseStat() {
   writeRule("CaseStat");
   ++indent;
-  accept(CASE_SYM, 0);
+  accept(CASE_SYM);
   expr();
-  accept(OF_SYM, 0);
+  accept(OF_SYM);
   caseOpt();
   while(sym -> type == PIPE_SYM) {
-    accept(PIPE_SYM, 0);
+    accept(PIPE_SYM);
     caseOpt();
   }
   if(sym -> type == ELSE_SYM) {
-    accept(ELSE_SYM, 0);
+    accept(ELSE_SYM);
     statSeq();
   }
-  accept(END_SYM, 0);
+  accept(END_SYM);
   --indent;
 }
 
@@ -531,10 +534,10 @@ void caseOpt() {
       || sym -> type == IDENT_SYM) {
     caseLabs();
     while(sym -> type == COMMA_SYM) {
-      accept(COMMA_SYM, 0);
+      accept(COMMA_SYM);
       caseLabs();
     }
-    accept(COLON_SYM, 0);
+    accept(COLON_SYM);
     statSeq();
   }
   --indent;
@@ -545,7 +548,7 @@ void caseLabs() {
   ++indent;
   constExpr();
   if(sym -> type == DOT_SYM) {
-    accept(DOT_DOT_SYM, 0);
+    accept(DOT_DOT_SYM);
     constExpr();
   }
   --indent;
@@ -575,9 +578,9 @@ void simplExpr() {
   writeRule("SimplExpr");
   ++indent;
   if(sym -> type == PLUS_SYM) {
-    accept(PLUS_SYM, 0);
+    accept(PLUS_SYM);
   } else if(sym -> type == MINUS_SYM) {
-    accept(MINUS_SYM, 0);
+    accept(MINUS_SYM);
   }
   term();
   while(sym -> type == PLUS_SYM || sym -> type == MINUS_SYM
@@ -611,18 +614,18 @@ void factor() {
       }
       break;
     case NUMBER_SYM:
-      accept(NUMBER_SYM, 0);
+      accept(NUMBER_SYM);
       break;
     case HEX_SYM:
-      accept(HEX_SYM, 0);
+      accept(HEX_SYM);
       break;
     case LPAREN_SYM:
-      accept(LPAREN_SYM, 0);
+      accept(LPAREN_SYM);
       expr();
-      accept(RPAREN_SYM, 0);
+      accept(RPAREN_SYM);
       break;
     case TILDE_SYM:
-      accept(TILDE_SYM, 0);
+      accept(TILDE_SYM);
       break;
     default:
       break;
@@ -635,13 +638,13 @@ void addOp() {
   ++indent;
   switch(sym -> type) {
     case OR_SYM :
-      accept(OR_SYM, 0);
+      accept(OR_SYM);
       break;
     case MINUS_SYM :
-      accept(MINUS_SYM, 0);
+      accept(MINUS_SYM);
       break;
     case PLUS_SYM :
-      accept(PLUS_SYM, 0);
+      accept(PLUS_SYM);
       break;
     default:
       error(sym -> type, IDENT_SYM);
@@ -654,22 +657,22 @@ void relation() {
   ++indent;
   switch(sym -> type) {
     case EQUALS_SYM :
-      accept(EQUALS_SYM, 0);
+      accept(EQUALS_SYM);
       break;
     case OCTOTHORPE_SYM :
-      accept(OCTOTHORPE_SYM, 0);
+      accept(OCTOTHORPE_SYM);
       break;
     case LT_SYM :
-      accept(LT_SYM, 0);
+      accept(LT_SYM);
       break;
     case GT_SYM :
-      accept(GT_SYM, 0);
+      accept(GT_SYM);
       break;
     case LTE_SYM :
-      accept(LTE_SYM, 0);
+      accept(LTE_SYM);
       break;
     case GTE_SYM :
-      accept(GTE_SYM, 0);
+      accept(GTE_SYM);
       break;
     default :
       error(sym -> type, IDENT_SYM);
@@ -682,13 +685,13 @@ void mulOp() {
   ++indent;
   //TODO make a switch
   if(sym -> type == STAR_SYM) {
-    accept(STAR_SYM, 0);
+    accept(STAR_SYM);
   } else if(sym -> type == DIV_SYM) {
-    accept(DIV_SYM, 0);
+    accept(DIV_SYM);
   } else if(sym -> type == MOD_SYM) {
-    accept(MOD_SYM, 0);
+    accept(MOD_SYM);
   } else if(sym -> type == AMPERSAND_SYM) {
-    accept(AMPERSAND_SYM, 0);
+    accept(AMPERSAND_SYM);
   } else {
     error(sym -> type, IDENT_SYM);
   }
@@ -698,7 +701,7 @@ void mulOp() {
 void designator() {
   writeRule("Designator");
   ++indent;
-  accept(IDENT_SYM, 0);
+  accept(IDENT_SYM);
   while(sym -> type == DOT_SYM || sym -> type == LBRAKT_SYM) {
     selector();
   }
@@ -709,12 +712,12 @@ void selector() {
   writeRule("Selector");
   ++indent;
   if(sym -> type == DOT_SYM) {
-    accept(DOT_SYM, 0);
-    accept(IDENT_SYM, 0);
+    accept(DOT_SYM);
+    accept(IDENT_SYM);
   } else if(sym -> type == LBRAKT_SYM) {
-    accept(LBRAKT_SYM, 0);
+    accept(LBRAKT_SYM);
     exprList();
-    accept(RBRAKT_SYM, 0);
+    accept(RBRAKT_SYM);
   } else {
     error(sym -> type, IDENT_SYM);
   }
