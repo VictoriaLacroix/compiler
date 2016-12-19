@@ -85,11 +85,14 @@ extern const TokenType  reservedWordsSymbols[];
 extern const char*      reservedWords[];
 extern const char*      predefIdents[];
 
+/*
+ * Ultimately unnecessary given how errors were handled.
 typedef enum
 { ERR_UNKNOWN
 } ErrTypes;
 
 extern const char* errmsgs[];
+*/
 
 struct TokenList {
   char*              token;

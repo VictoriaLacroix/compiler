@@ -606,9 +606,9 @@ void term() {
 void factor() {
   writeRule("Factor");
   ++indent;
-  designator();
   switch(sym -> type) {
     case IDENT_SYM:
+      designator();
       if(sym -> type == LPAREN_SYM) {
         actParams();
       }
